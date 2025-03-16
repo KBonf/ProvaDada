@@ -10,7 +10,7 @@
         android:id="@+id/btnLoadPrenotazioni"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Carica Prenotazioni Pending" />
+        android:text="CARICA PRENOTAZIONI PENDING" />
 
     <Button
         android:id="@+id/btnAccept"
@@ -24,5 +24,5 @@
         android:layout_height="wrap_content"
         android:text="Rifiuta Prenotazione (ID 1)" />
 
-    <!-- Inserisci qui la RecyclerView o altri componenti per visualizzare l'elenco -->
+    <!-- Aggiungi qui altre view, ad esempio una RecyclerView per visualizzare l'elenco -->
 </LinearLayout>

@@ -3,8 +3,6 @@ package com.example.provadada;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 import com.example.provadada.api.ApiClient;
 import com.example.provadada.api.PrenotazioniApiService;
@@ -17,55 +15,36 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private PrenotazioniApiService apiService;
-    // Potresti avere una lista di prenotazioni in pending, ad esempio per mostrarle in una RecyclerView
     private List<Prenotazione> prenotazioniList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Assicurati di avere un layout activity_main.xml
+        setContentView(R.layout.activity_main);
 
-        // Inizializza Retrofit
+        // Inizializza Retrofit e il servizio API
         apiService = ApiClient.getClient().create(PrenotazioniApiService.class);
 
-        // Bottone per caricare le prenotazioni pending
-        Button btnLoad = findViewById(R.id.btnLoadPrenotazioni);
-        btnLoad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadPrenotazioni();
-            }
-        });
+        // Quando si clicca sul pulsante "Carica Prenotazioni Pending", esegui il polling
+        findViewById(R.id.btnLoadPrenotazioni).setOnClickListener(view -> loadPrenotazioni());
 
-        // Bottone per aggiornare lo status della prenotazione
-        // Qui usiamo l'ID 1 come esempio; in un caso reale, selezionerai l'elemento dalla lista
-        Button btnAccept = findViewById(R.id.btnAccept);
-        btnAccept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateStatus(1, "accepted"); // Cambia 1 con l'ID reale selezionato
-            }
-        });
-        Button btnReject = findViewById(R.id.btnReject);
-        btnReject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateStatus(1, "rejected"); // Cambia 1 con l'ID reale selezionato
-            }
-        });
+        // Esempi di pulsanti per aggiornare lo status (usando ID 1 come esempio)
+        findViewById(R.id.btnAccept).setOnClickListener(view -> updateStatus(1, "accepted"));
+        findViewById(R.id.btnReject).setOnClickListener(view -> updateStatus(1, "rejected"));
     }
 
     private void loadPrenotazioni() {
-        // Per esempio, usa la data odierna
-        String data = "2023-04-15"; // Sostituisci con la data desiderata o ottienila dinamicamente
+        // Imposta la data da interrogare (modifica in base alle tue esigenze)
+        String data = "2023-04-15"; // Oppure recuperala dinamicamente
+        Log.d("MainActivity", "Richiedo prenotazioni per data: " + data);
         Call<List<Prenotazione>> call = apiService.getPrenotazioni(data);
         call.enqueue(new Callback<List<Prenotazione>>() {
             @Override
             public void onResponse(Call<List<Prenotazione>> call, Response<List<Prenotazione>> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     prenotazioniList = response.body();
                     Log.d("MainActivity", "Ricevute " + prenotazioniList.size() + " prenotazioni");
-                    // Qui, aggiorna la tua UI (per esempio, aggiorna una RecyclerView)
+                    // Qui, ad esempio, aggiorna la UI (RecyclerView, ListView, ecc.)
                 } else {
                     Log.e("MainActivity", "Errore nella risposta: " + response.message());
                 }
@@ -85,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Prenotazione aggiornata a: " + status, Toast.LENGTH_SHORT).show();
-                    // Dopo l'aggiornamento, potresti voler ricaricare la lista
                     loadPrenotazioni();
                 } else {
                     Toast.makeText(MainActivity.this, "Errore nell'aggiornamento: " + response.message(), Toast.LENGTH_SHORT).show();
