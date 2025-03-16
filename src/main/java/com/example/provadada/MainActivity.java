@@ -1,66 +1,101 @@
 package com.example.provadada;
 
-import android.os.Bundle;
-import android.view.View;
-import android.view.Menu;
-
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.provadada.databinding.ActivityMainBinding;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import com.example.provadada.api.ApiClient;
+import com.example.provadada.api.PrenotazioniApiService;
+import com.example.provadada.models.Prenotazione;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
-    private ActivityMainBinding binding;
+    private PrenotazioniApiService apiService;
+    // Potresti avere una lista di prenotazioni in pending, ad esempio per mostrarle in una RecyclerView
+    private List<Prenotazione> prenotazioniList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main); // Assicurati di avere un layout activity_main.xml
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        // Inizializza Retrofit
+        apiService = ApiClient.getClient().create(PrenotazioniApiService.class);
 
-        setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
+        // Bottone per caricare le prenotazioni pending
+        Button btnLoad = findViewById(R.id.btnLoadPrenotazioni);
+        btnLoad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
+                loadPrenotazioni();
             }
         });
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+
+        // Bottone per aggiornare lo status della prenotazione
+        // Qui usiamo l'ID 1 come esempio; in un caso reale, selezionerai l'elemento dalla lista
+        Button btnAccept = findViewById(R.id.btnAccept);
+        btnAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateStatus(1, "accepted"); // Cambia 1 con l'ID reale selezionato
+            }
+        });
+        Button btnReject = findViewById(R.id.btnReject);
+        btnReject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateStatus(1, "rejected"); // Cambia 1 con l'ID reale selezionato
+            }
+        });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    private void loadPrenotazioni() {
+        // Per esempio, usa la data odierna
+        String data = "2023-04-15"; // Sostituisci con la data desiderata o ottienila dinamicamente
+        Call<List<Prenotazione>> call = apiService.getPrenotazioni(data);
+        call.enqueue(new Callback<List<Prenotazione>>() {
+            @Override
+            public void onResponse(Call<List<Prenotazione>> call, Response<List<Prenotazione>> response) {
+                if (response.isSuccessful()) {
+                    prenotazioniList = response.body();
+                    Log.d("MainActivity", "Ricevute " + prenotazioniList.size() + " prenotazioni");
+                    // Qui, aggiorna la tua UI (per esempio, aggiorna una RecyclerView)
+                } else {
+                    Log.e("MainActivity", "Errore nella risposta: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Prenotazione>> call, Throwable t) {
+                Log.e("MainActivity", "Errore nel caricamento: " + t.getMessage());
+            }
+        });
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+    private void updateStatus(int id, String status) {
+        Call<Void> call = apiService.updatePrenotazioneStatus(id, status);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Prenotazione aggiornata a: " + status, Toast.LENGTH_SHORT).show();
+                    // Dopo l'aggiornamento, potresti voler ricaricare la lista
+                    loadPrenotazioni();
+                } else {
+                    Toast.makeText(MainActivity.this, "Errore nell'aggiornamento: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Aggiornamento fallito: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
