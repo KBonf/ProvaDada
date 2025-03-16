@@ -1,14 +1,33 @@
 package com.example.provadada.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Prenotazione {
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("nome")
     private String nome;
+
+    @SerializedName("email")
     private String email;
-    private int numero_persone;
+
+    @SerializedName("numero_persone")
+    private int numeroPersone;
+
+    @SerializedName("data")
     private String data;
+
+    @SerializedName("orario")
     private String orario;
-    private String created_at;
+
+    @SerializedName("created_at")
+    private String createdAt;
+
+    @SerializedName("status")
     private String status;
+
+    @SerializedName("tavoli")
     private String tavoli;
 
     // Getters e setters
@@ -31,11 +50,11 @@ public class Prenotazione {
     public void setEmail(String email) {
         this.email = email;
     }
-    public int getNumero_persone() {
-        return numero_persone;
+    public int getNumeroPersone() {
+        return numeroPersone;
     }
-    public void setNumero_persone(int numero_persone) {
-        this.numero_persone = numero_persone;
+    public void setNumeroPersone(int numeroPersone) {
+        this.numeroPersone = numeroPersone;
     }
     public String getData() {
         return data;
@@ -49,11 +68,11 @@ public class Prenotazione {
     public void setOrario(String orario) {
         this.orario = orario;
     }
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
     public String getStatus() {
         return status;
@@ -66,5 +85,20 @@ public class Prenotazione {
     }
     public void setTavoli(String tavoli) {
         this.tavoli = tavoli;
+    }
+
+    @Override
+    public String toString() {
+        return "Prenotazione{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                ", numeroPersone=" + numeroPersone +
+                ", data='" + data + '\'' +
+                ", orario='" + orario + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", status='" + status + '\'' +
+                ", tavoli='" + tavoli + '\'' +
+                '}';
     }
 }

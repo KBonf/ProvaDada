@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnLoadPrenotazioni"
+    <!-- Campo di input per inserire la data -->
+    <EditText
+        android:id="@+id/etData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CARICA PRENOTAZIONI PENDING" />
+        android:hint="Inserisci data (YYYY-MM-DD)"
+        android:inputType="date" />
 
+    <!-- Pulsante per caricare le prenotazioni -->
     <Button
-        android:id="@+id/btnAccept"
+        android:id="@+id/btnCarica"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Carica Prenotazioni"
+        android:layout_marginTop="8dp"/>
+
+    <!-- ListView per mostrare le prenotazioni -->
+    <ListView
+        android:id="@+id/listViewPrenotazioni"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Accetta Prenotazione (ID 1)" />
+        android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/btnReject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Rifiuta Prenotazione (ID 1)" />
-
-    <!-- Aggiungi qui altre view, ad esempio una RecyclerView per visualizzare l'elenco -->
 </LinearLayout>
