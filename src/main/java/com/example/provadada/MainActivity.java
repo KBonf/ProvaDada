@@ -11,6 +11,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPrenotazioni() {
         // Imposta la data da interrogare (modifica in base alle tue esigenze)
-        String data = "2023-04-15"; // Oppure recuperala dinamicamente
+        String data = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         Log.d("MainActivity", "Richiedo prenotazioni per data: " + data);
         Call<List<Prenotazione>> call = apiService.getPrenotazioni(data);
         call.enqueue(new Callback<List<Prenotazione>>() {
